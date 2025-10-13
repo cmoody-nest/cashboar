@@ -2,13 +2,20 @@ import { createEnv } from "@t3-oss/env-nextjs";
 import z from "zod";
 
 export const env = createEnv({
-  server: {},
+  server: {
+    LOG_LEVEL: z
+      .enum(["trace", "debug", "info", "warn", "error", "fatal"])
+      .default("info"),
+    NODE_ENV: z.enum(["development", "production"]).default("development"),
+  },
   client: {
     NEXT_PUBLIC_POSTHOG_KEY: z
       .string()
       .min(1, { message: "NEXT_PUBLIC_POSTHOG_KEY is required" }),
   },
   runtimeEnv: {
+    LOG_LEVEL: process.env.LOG_LEVEL,
+    NODE_ENV: process.env.NODE_ENV,
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
   },
 });
