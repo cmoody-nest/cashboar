@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
+import { type NextRequest, NextResponse } from "next/server";
 import pino from "pino";
 import { env } from "./env";
 
@@ -11,43 +11,34 @@ const logger = pino({
     paths: REDACTED_FIELDS.map((field) => `*.${field}`),
     censor: "[REDACTED]",
   },
-  transport:
-    env.NODE_ENV === "production"
-      ? {
-          target: "pino-pretty",
-          options: {
-            colorize: true,
-            translateTime: "SYS:standard",
-          },
-        }
-      : undefined,
 });
 
-export function withLogger(handler: NextApiHandler) {
-  return async (request: NextApiRequest, response: NextApiResponse) => {
-    const start = Date.now();
-    const requestId = randomUUID();
-    // TODO: Add user identification if available
+export async function withLogger(
+  request: NextRequest,
+  handler: (request: NextRequest) => Promise<NextResponse>,
+) {
+  const start = Date.now();
+  const requestId = randomUUID();
+  // TODO: Add user identification if available
+  try {
+    const response = await handler(request);
 
-    response.on("finish", () => {
-      const duration = Date.now() - start;
-      logger.info({
-        requestId,
-        duration,
-        method: request.method,
-        url: request.url,
-        status: response.statusCode,
-        timestamp: new Date().toISOString(),
-      });
+    const duration = Date.now() - start;
+
+    logger.info({
+      requestId,
+      duration,
+      method: request.method,
+      url: request.url,
+      status: response.status,
+      timestamp: new Date().toISOString(),
     });
 
-    try {
-      await handler(request, response);
-    } catch (error) {
-      logger.error({ requestId, error }, "Unhandled error in API handler");
-      response.status(500).json({ error: "Internal Server Error" });
-    }
-  };
+    return response;
+  } catch (error) {
+    logger.error({ requestId, error }, "Unhandled error in API handler");
+    return new NextResponse("Internal Server Error", { status: 500 });
+  }
 }
 
 export default logger;
