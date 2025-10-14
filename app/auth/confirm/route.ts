@@ -4,6 +4,11 @@ import z from "zod";
 import { withLogger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase/server";
 
+// NOTE: This route will never be hit until we get a proper redirect URL in
+// Supabase.
+//
+// I don't have permissions sadly to do that.
+// TODO: Ask for permissions or have someone with permissions do it.
 const RequestSchema = z.object({
   type: z
     .enum([
