@@ -20,6 +20,19 @@
       "recommended": true,
       "suspicious": {
         "noUnknownAtRules": "off"
+      },
+      "style": {
+        "noRestrictedImports": {
+          "level": "error",
+          "options": {
+            "patterns": [
+              {
+                "group": ["./*", "../*"],
+                "message": "Please use absolute imports instead of relative imports."
+              }
+            ]
+          }
+        }
       }
     },
     "domains": {
