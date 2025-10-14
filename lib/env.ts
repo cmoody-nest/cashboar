@@ -7,6 +7,7 @@ export const env = createEnv({
       .enum(["trace", "debug", "info", "warn", "error", "fatal"])
       .default("info"),
     NODE_ENV: z.enum(["development", "production"]).default("development"),
+    DATABASE_URL: z.string().min(1, { message: "DATABASE_URL is required" }),
   },
   client: {
     NEXT_PUBLIC_POSTHOG_KEY: z
@@ -22,6 +23,7 @@ export const env = createEnv({
   runtimeEnv: {
     LOG_LEVEL: process.env.LOG_LEVEL,
     NODE_ENV: process.env.NODE_ENV,
+    DATABASE_URL: process.env.DATABASE_URL,
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
