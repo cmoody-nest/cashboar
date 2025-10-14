@@ -1,18 +1,16 @@
 import { login, signup } from "@/app/login/actions";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export default function LoginPage() {
   return (
     <form>
       <label htmlFor="email">Email:</label>
-      <input id="email" name="email" type="email" required />
+      <Input id="email" name="email" type="email" required />
       <label htmlFor="password">Password:</label>
-      <input id="password" name="password" type="password" required />
-      <button type="button" formAction={login}>
-        Log in
-      </button>
-      <button type="button" formAction={signup}>
-        Sign up
-      </button>
+      <Input id="password" name="password" type="password" required />
+      <Button formAction={login}>Log In</Button>
+      <Button formAction={signup}>Sign Up</Button>
     </form>
   );
 }
