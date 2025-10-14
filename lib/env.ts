@@ -12,10 +12,19 @@ export const env = createEnv({
     NEXT_PUBLIC_POSTHOG_KEY: z
       .string()
       .min(1, { message: "NEXT_PUBLIC_POSTHOG_KEY is required" }),
+    NEXT_PUBLIC_SUPABASE_URL: z
+      .string()
+      .min(1, { message: "NEXT_PUBLIC_SUPABASE_URL is required" }),
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z
+      .string()
+      .min(1, { message: "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY is required" }),
   },
   runtimeEnv: {
     LOG_LEVEL: process.env.LOG_LEVEL,
     NODE_ENV: process.env.NODE_ENV,
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
   },
 });

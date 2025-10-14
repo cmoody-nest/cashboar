@@ -1,7 +1,8 @@
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
 import { type NextRequest, NextResponse } from "next/server";
 import pino from "pino";
-import { env } from "./env";
+import { env } from "@/lib/env";
+import { createClient } from "@/lib/supabase/server";
 
 const REDACTED_FIELDS = ["password", "token", "secret"];
 
@@ -19,7 +20,10 @@ export async function withLogger(
 ) {
   const start = Date.now();
   const requestId = randomUUID();
-  // TODO: Add user identification if available
+  const client = await createClient();
+  const user = await client.auth.getUser();
+  const userId = user.data.user?.id ?? null;
+
   try {
     const response = await handler(request);
 
@@ -28,6 +32,7 @@ export async function withLogger(
     logger.info({
       requestId,
       duration,
+      userId,
       method: request.method,
       url: request.url,
       status: response.status,
