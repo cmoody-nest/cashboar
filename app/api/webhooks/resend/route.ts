@@ -9,7 +9,10 @@ import { withLogger } from "@/lib/logger";
 const RequestSchema = z.object({
   type: z.string(),
   created_at: z.coerce.date(),
-  data: z.record(z.string(), z.unknown()),
+  data: z.object({
+    email_id: z.string(),
+    to: z.array(z.string()),
+  }),
 });
 
 export async function POST(request: NextRequest) {
@@ -19,22 +22,31 @@ export async function POST(request: NextRequest) {
 
     const webhook = new Webhook(env.RESEND_WEBHOOK_SECRET);
 
-    try {
-      const { type, created_at, data } = RequestSchema.parse(
-        webhook.verify(payload, headers),
-      );
+    const { type, created_at, data } = RequestSchema.parse(
+      webhook.verify(payload, headers),
+    );
 
-      const createdAt = created_at.toISOString();
+    const emailId = data.email_id;
+    const recipient = data.to.at(0);
+    const timestamp = created_at;
+    const deliveryStatus = type.split(".").pop();
 
-      db.insert(resend_webhooks).values({
-        type,
-        data,
-        createdAt,
-      });
-
-      return NextResponse.json({ received: true });
-    } catch (error) {
-      return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
+    if (!recipient) {
+      throw new Error("No recipient found");
     }
+
+    if (!deliveryStatus) {
+      throw new Error("No delivery status found");
+    }
+
+    db.insert(resend_webhooks).values({
+      type,
+      emailId,
+      recipient,
+      timestamp,
+      deliveryStatus,
+    });
+
+    return NextResponse.json({ received: true });
   });
 }
