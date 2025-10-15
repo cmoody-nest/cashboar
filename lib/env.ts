@@ -8,6 +8,9 @@ export const env = createEnv({
       .default("info"),
     NODE_ENV: z.enum(["development", "production"]).default("development"),
     DATABASE_URL: z.string().min(1, { message: "DATABASE_URL is required" }),
+    RESEND_WEBHOOK_SECRET: z
+      .string()
+      .min(1, { message: "RESEND_WEBHOOK_SECRET is required" }),
   },
   client: {
     NEXT_PUBLIC_POSTHOG_KEY: z
@@ -22,9 +25,12 @@ export const env = createEnv({
     NEXT_PUBLIC_BASE_URL: z.url().default("http://localhost:3000"),
   },
   runtimeEnv: {
+    // Server
     LOG_LEVEL: process.env.LOG_LEVEL,
     NODE_ENV: process.env.NODE_ENV,
     DATABASE_URL: process.env.DATABASE_URL,
+    RESEND_WEBHOOK_SECRET: process.env.RESEND_WEBHOOK_SECRET,
+    // Client
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
