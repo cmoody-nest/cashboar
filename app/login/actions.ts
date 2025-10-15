@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import z from "zod";
+import { env } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
 
 const LoginFormSchema = z.object({
@@ -31,12 +32,20 @@ export async function login(formData: FormData) {
 export async function signup(formData: FormData) {
   const supabase = await createClient();
 
-  const data = LoginFormSchema.parse({
+  const { email, password } = LoginFormSchema.parse({
     email: formData.get("email"),
     password: formData.get("password"),
   });
 
-  const { error } = await supabase.auth.signUp(data);
+  const emailRedirectTo = new URL(env.NEXT_PUBLIC_BASE_URL).toString();
+
+  const { error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      emailRedirectTo,
+    },
+  });
 
   if (error) {
     redirect("/error");
