@@ -1,6 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { Webhook } from "svix";
 import z from "zod";
+import { db } from "@/lib/db";
+import { resend_webhooks } from "@/lib/db/schema";
 import { env } from "@/lib/env";
 import { withLogger } from "@/lib/logger";
 
@@ -21,6 +23,14 @@ export async function POST(request: NextRequest) {
       const { type, created_at, data } = RequestSchema.parse(
         webhook.verify(payload, headers),
       );
+
+      const createdAt = created_at.toISOString();
+
+      db.insert(resend_webhooks).values({
+        type,
+        data,
+        createdAt,
+      });
 
       return NextResponse.json({ received: true });
     } catch (error) {
