@@ -50,10 +50,7 @@ function OnboardingForm({ formAction }: Props) {
           // Append user info
           formData.append("firstName", values.userInfo.firstName);
           formData.append("lastName", values.userInfo.lastName);
-          formData.append(
-            "dateOfBirth",
-            values.userInfo.dateOfBirth.toISOString(),
-          );
+          formData.append("dateOfBirth", values.userInfo.dateOfBirth);
           formData.append("gender", values.userInfo.gender);
 
           // Append location info

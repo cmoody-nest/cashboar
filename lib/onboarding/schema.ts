@@ -4,7 +4,9 @@ import z from "zod";
 const MIN_AGE = 18;
 const MAX_AGE = 100;
 
-function validateDateOfBirth(date: Date) {
+function validateDateOfBirth(dateString: string) {
+  const date = new Date(dateString);
+
   if (!isValid(date)) {
     return false;
   }
@@ -26,8 +28,8 @@ export const OnboardingProfileDataSchema = z.object({
   lastName: z
     .string()
     .min(2, { error: "Last name must be at least 2 characters." }),
-  dateOfBirth: z.coerce.date().refine(validateDateOfBirth, {
-    error: "Invalid date of birth.",
+  dateOfBirth: z.string().refine(validateDateOfBirth, {
+    error: `You must be between ${MIN_AGE} and ${MAX_AGE} years old.`,
   }),
   gender: z.enum(["male", "female"], {
     error: "Please select a valid gender.",

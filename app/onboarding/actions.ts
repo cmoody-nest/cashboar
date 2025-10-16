@@ -15,16 +15,15 @@ export async function insertProfileData(formData: FormData) {
     throw new Error("User not authenticated");
   }
 
-  const values = Object.fromEntries(formData.entries());
-  const data = OnboardingProfileDataSchema.parse(values);
+  const formValues = Object.fromEntries(formData.entries());
+  const data = OnboardingProfileDataSchema.parse(formValues);
+  const values = {
+    ...data,
+    supabaseId,
+    dateOfBirth: new Date(data.dateOfBirth),
+  };
 
-  await db
-    .insert(profiles)
-    .values({
-      ...data,
-      supabaseId,
-    })
-    .onConflictDoNothing();
+  await db.insert(profiles).values(values).onConflictDoNothing();
 
   redirect("/");
 }

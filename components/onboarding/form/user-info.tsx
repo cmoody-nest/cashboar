@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format } from "date-fns";
+import { format, isValid } from "date-fns";
 import { ChevronDownIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import type z from "zod";
@@ -50,7 +50,8 @@ function OnboardingUserInfoForm({ onSubmit }: Props) {
     defaultValues: {
       firstName: "",
       lastName: "",
-      dateOfBirth: new Date(),
+      dateOfBirth: "",
+      gender: undefined,
     },
   });
 
@@ -104,36 +105,45 @@ function OnboardingUserInfoForm({ onSubmit }: Props) {
         <FormField
           control={form.control}
           name="dateOfBirth"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel htmlFor="dateOfBirth">Date of Birth</FormLabel>
-              <FormControl>
-                <Popover onOpenChange={field.onBlur}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="justify-between font-normal"
+          render={({ field }) => {
+            const date = new Date(field.value);
+
+            return (
+              <FormItem>
+                <FormLabel htmlFor="dateOfBirth">Date of Birth</FormLabel>
+                <FormControl>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="justify-between font-normal"
+                      >
+                        {isValid(date)
+                          ? format(date, "MM/dd/yyyy")
+                          : "Select date"}
+                        <ChevronDownIcon />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="w-auto overflow-hidden p-0"
+                      align="start"
                     >
-                      {format(field.value, "MM/dd/yyyy")}
-                      <ChevronDownIcon />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    className="w-auto overflow-hidden p-0"
-                    align="start"
-                  >
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      captionLayout="dropdown"
-                      onSelect={field.onChange}
-                    />
-                  </PopoverContent>
-                </Popover>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+                      <Calendar
+                        mode="single"
+                        selected={isValid(date) ? date : undefined}
+                        captionLayout="dropdown"
+                        onSelect={(date) => {
+                          field.onChange(date?.toISOString() ?? "");
+                          field.onBlur();
+                        }}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
         />
 
         <FormField
