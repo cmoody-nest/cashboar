@@ -7,7 +7,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 export const genderEnum = pgEnum("gender", ["male", "female"]);
-export const profileStatus = pgEnum("user_status", [
+export const profileStatus = pgEnum("profile_status", [
   "active",
   "pending",
   "suspended",
