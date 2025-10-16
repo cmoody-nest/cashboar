@@ -21,11 +21,13 @@ const formSchema = z.object({
   step: z.enum(["userInfo", "location", "finish"]),
 });
 
-type FormData = z.infer<typeof formSchema>;
-type Props = Pick<HTMLProps<HTMLButtonElement>, "formAction">;
+type FormValues = z.infer<typeof formSchema>;
+type Props = {
+  formAction: (data: FormData) => Promise<void>;
+};
 
 function OnboardingForm({ formAction }: Props) {
-  const form = useForm<FormData>({
+  const form = useForm<FormValues>({
     mode: "onTouched",
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -34,16 +36,12 @@ function OnboardingForm({ formAction }: Props) {
   });
 
   const onSubmit = useCallback(
-    (key: keyof FormData, step: FormData["step"]) =>
-      (data: FormData[typeof key]) => {
+    (key: keyof FormValues, step: FormValues["step"]) =>
+      async (data: FormValues[typeof key]) => {
         form.setValue(key, data);
         form.setValue("step", step);
 
         if (step === "finish") {
-          if (typeof formAction !== "function") {
-            throw new Error("formAction is not a function");
-          }
-
           const values = form.getValues();
           const formData = new FormData();
 
@@ -58,7 +56,7 @@ function OnboardingForm({ formAction }: Props) {
           formData.append("city", values.location.city);
           formData.append("zipCode", values.location.zipCode);
 
-          formAction(formData);
+          await formAction(formData);
         }
       },
     [form, formAction],

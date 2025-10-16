@@ -49,13 +49,13 @@ function decapitalizeCity(city: string) {
     .join(" ");
 }
 
-type FormData = z.infer<typeof formSchema>;
+type FormValues = z.infer<typeof formSchema>;
 type Props = {
-  onSubmit: (data: FormData) => void;
+  onSubmit: (data: FormValues) => void;
 };
 
 function OnboardingLocationForm({ onSubmit }: Props) {
-  const form = useForm<FormData>({
+  const form = useForm<FormValues>({
     mode: "onTouched",
     resolver: zodResolver(formSchema),
     defaultValues: {

@@ -37,14 +37,14 @@ export const formSchema = OnboardingProfileDataSchema.pick({
   gender: true,
 });
 
-type FormData = z.infer<typeof formSchema>;
+type FormValues = z.infer<typeof formSchema>;
 
 type Props = {
-  onSubmit: (data: FormData) => void;
+  onSubmit: (data: FormValues) => void;
 };
 
 function OnboardingUserInfoForm({ onSubmit }: Props) {
-  const form = useForm<FormData>({
+  const form = useForm<FormValues>({
     mode: "onTouched",
     resolver: zodResolver(formSchema),
     defaultValues: {
