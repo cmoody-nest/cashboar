@@ -25,7 +25,6 @@ export const profiles = pgTable("profiles", {
   city: varchar("city", { length: 256 }).notNull(),
   zipCode: varchar("zipCode", { length: 20 }).notNull(),
   // Other
-  status: profileStatus("status").default("pending").notNull(),
   supabaseId: varchar("supabaseId").notNull().unique(),
 });
 
