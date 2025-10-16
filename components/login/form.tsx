@@ -42,15 +42,15 @@ const formSchema = z.object({
     }),
 });
 
-type FormData = z.infer<typeof formSchema>;
+type FormValues = z.infer<typeof formSchema>;
 
 type Props = {
-  onLogin: HTMLProps<HTMLButtonElement>["formAction"];
-  onSignup: HTMLProps<HTMLButtonElement>["formAction"];
+  onLogin: (data: FormData) => Promise<void>;
+  onSignup: (data: FormData) => Promise<void>;
 };
 
 function LoginForm({ onLogin, onSignup }: Props) {
-  const form = useForm<FormData>({
+  const form = useForm<FormValues>({
     mode: "onTouched",
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -60,12 +60,7 @@ function LoginForm({ onLogin, onSignup }: Props) {
   });
 
   const onSubmit = useCallback(
-    async (data: FormData, e?: BaseSyntheticEvent) => {
-      if (typeof onLogin !== "function" || typeof onSignup !== "function") {
-        console.error("onLogin and onSignup must be functions");
-        return;
-      }
-
+    async (data: FormValues, e?: BaseSyntheticEvent) => {
       if (e?.nativeEvent instanceof SubmitEvent && e.nativeEvent.submitter) {
         const action = e.nativeEvent.submitter.getAttribute("value");
         const formData = new FormData();
