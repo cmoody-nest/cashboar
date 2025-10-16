@@ -4,22 +4,22 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
-import { Flex } from "@/components/base/flex";
+import { OnboardingFinishForm } from "@/components/onboarding/form/finish";
 import {
   formSchema as locationFormSchema,
   OnboardingLocationForm,
 } from "@/components/onboarding/form/location";
+import { OnboardingSplashForm } from "@/components/onboarding/form/splash";
 import {
   OnboardingUserInfoForm,
   formSchema as userInfoFormSchema,
 } from "@/components/onboarding/form/user-info";
 import { Form, FormField } from "@/components/ui/form";
-import { Spinner } from "@/components/ui/spinner";
 
 const formSchema = z.object({
   userInfo: userInfoFormSchema,
   location: locationFormSchema,
-  step: z.enum(["userInfo", "location", "finish"]),
+  step: z.enum(["splash", "userInfo", "location", "finish"]),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -35,6 +35,10 @@ function OnboardingForm({ formAction }: Props) {
       step: "userInfo",
     },
   });
+
+  const onBeginOnboarding = useCallback(() => {
+    form.setValue("step", "userInfo");
+  }, [form]);
 
   const onSubmit = useCallback(
     (key: keyof FormValues, step: FormValues["step"]) =>
@@ -70,6 +74,8 @@ function OnboardingForm({ formAction }: Props) {
         name="step"
         render={({ field }) => {
           switch (field.value) {
+            case "splash":
+              return <OnboardingSplashForm onSubmit={onBeginOnboarding} />;
             case "userInfo":
               return (
                 <OnboardingUserInfoForm
@@ -83,12 +89,7 @@ function OnboardingForm({ formAction }: Props) {
                 />
               );
             case "finish":
-              return (
-                <Flex className="items-center space-x-2">
-                  <Spinner />
-                  <p>Finishing up...</p>
-                </Flex>
-              );
+              return <OnboardingFinishForm />;
             default:
               throw new Error(`Unknown onboarding step: ${field.value}`);
           }
