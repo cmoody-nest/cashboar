@@ -22,18 +22,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { OnboardingProfileDataSchema } from "@/lib/onboarding/schema";
 
 const stateOptions = states.map((state) => ({
   value: state.abbreviation,
   label: state.name,
 }));
 
-const formSchema = z.object({
-  state: z.string().min(2, { error: "State must be at least 2 characters." }),
-  city: z.string().min(2, { error: "City must be at least 2 characters." }),
-  zipCode: z
-    .string()
-    .min(2, { error: "Zip code must be at least 2 characters." }),
+export const formSchema = OnboardingProfileDataSchema.pick({
+  state: true,
+  city: true,
+  zipCode: true,
 });
 
 const zipStaticApiResponseSchema = z.object({
@@ -50,8 +49,13 @@ function decapitalizeCity(city: string) {
     .join(" ");
 }
 
-function OnboardingLocationForm() {
-  const form = useForm<z.infer<typeof formSchema>>({
+type FormData = z.infer<typeof formSchema>;
+type Props = {
+  onSubmit: (data: FormData) => void;
+};
+
+function OnboardingLocationForm({ onSubmit }: Props) {
+  const form = useForm<FormData>({
     mode: "onTouched",
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -84,7 +88,7 @@ function OnboardingLocationForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(() => {})}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
           name="zipCode"

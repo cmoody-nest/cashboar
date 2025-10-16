@@ -1,10 +1,10 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { differenceInYears, format, isValid } from "date-fns";
+import { format } from "date-fns";
 import { ChevronDownIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
-import z from "zod";
+import type z from "zod";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -28,59 +28,35 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { OnboardingProfileDataSchema } from "@/lib/onboarding/schema";
 
-const MIN_AGE = 18;
-const MAX_AGE = 100;
-
-function validateDateOfBirth(date: Date) {
-  if (!isValid(date)) {
-    return false;
-  }
-
-  const today = new Date();
-  const age = Math.abs(differenceInYears(date, today));
-
-  if (age < MIN_AGE || age > MAX_AGE) {
-    return false;
-  }
-
-  return true;
-}
-
-export const formSchema = z.object({
-  firstName: z
-    .string()
-    .min(2, { error: "First name must be at least 2 characters." }),
-  lastName: z
-    .string()
-    .min(2, { error: "Last name must be at least 2 characters." }),
-  dateOfBirth: z.date().refine(validateDateOfBirth, {
-    error: "Invalid date of birth.",
-  }),
-  gender: z.enum(["male", "female"], {
-    error: "Please select a valid gender.",
-  }),
+export const formSchema = OnboardingProfileDataSchema.pick({
+  firstName: true,
+  lastName: true,
+  dateOfBirth: true,
+  gender: true,
 });
 
-function OnboardingUserInfoForm() {
-  const form = useForm<z.infer<typeof formSchema>>({
+type FormData = z.infer<typeof formSchema>;
+
+type Props = {
+  onSubmit: (data: FormData) => void;
+};
+
+function OnboardingUserInfoForm({ onSubmit }: Props) {
+  const form = useForm<FormData>({
     mode: "onTouched",
     resolver: zodResolver(formSchema),
     defaultValues: {
       firstName: "",
       lastName: "",
       dateOfBirth: new Date(),
-      gender: undefined,
     },
   });
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit((data) => {
-          console.log(data);
-        })}
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
           name="firstName"
