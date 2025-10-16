@@ -5,12 +5,10 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { profiles } from "@/lib/db/schema";
 import { OnboardingProfileDataSchema } from "@/lib/onboarding/schema";
-import { createClient } from "@/lib/supabase/server";
+import { getSupabaseUser } from "@/lib/supabase/utils";
 
 export async function insertProfileData(formData: FormData) {
-  const supabase = await createClient();
-  const user = await supabase.auth.getUser();
-  const supabaseId = user.data.user?.id;
+  const { id: supabaseId } = await getSupabaseUser();
 
   if (!supabaseId) {
     throw new Error("User not authenticated");
