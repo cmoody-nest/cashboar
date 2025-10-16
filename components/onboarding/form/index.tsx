@@ -1,9 +1,10 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { type HTMLProps, useCallback } from "react";
+import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
+import { Flex } from "@/components/base/flex";
 import {
   formSchema as locationFormSchema,
   OnboardingLocationForm,
@@ -83,9 +84,10 @@ function OnboardingForm({ formAction }: Props) {
               );
             case "finish":
               return (
-                <div className="flex items-center space-x-2">
-                  <Spinner /> <p>Finishing up...</p>
-                </div>
+                <Flex className="items-center space-x-2">
+                  <Spinner />
+                  <p>Finishing up...</p>
+                </Flex>
               );
             default:
               throw new Error(`Unknown onboarding step: ${field.value}`);
