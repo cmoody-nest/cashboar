@@ -78,8 +78,16 @@ function OnboardingLocationForm({ onSubmit }: Props) {
       const json = await response.json();
       const { state, city } = zipStaticApiResponseSchema.parse(json);
 
-      form.setValue("state", state);
-      form.setValue("city", decapitalizeCity(city));
+      form.setValue("state", state, {
+        shouldDirty: true,
+        shouldValidate: true,
+        shouldTouch: true,
+      });
+      form.setValue("city", decapitalizeCity(city), {
+        shouldDirty: true,
+        shouldValidate: true,
+        shouldTouch: true,
+      });
 
       return json;
     },
