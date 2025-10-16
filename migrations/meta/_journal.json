@@ -29,6 +29,27 @@
       "when": 1760528067789,
       "tag": "0003_keen_boom_boom",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1760599461942,
+      "tag": "0004_right_lilith",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1760599684255,
+      "tag": "0005_early_lucky_pierre",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1760599767377,
+      "tag": "0006_workable_lethal_legion",
+      "breakpoints": true
     }
   ]
 }
