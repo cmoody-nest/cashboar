@@ -7,13 +7,13 @@ import {
 } from "drizzle-orm/pg-core";
 
 export const genderEnum = pgEnum("gender", ["male", "female"]);
-export const userStatus = pgEnum("user_status", [
+export const profileStatus = pgEnum("user_status", [
   "active",
   "pending",
   "suspended",
 ]);
 
-export const users = pgTable("users", {
+export const profiles = pgTable("profiles", {
   id: serial("id").primaryKey(),
   // Primary info
   firstName: varchar("firstName", { length: 256 }).notNull(),
@@ -25,7 +25,7 @@ export const users = pgTable("users", {
   city: varchar("city", { length: 256 }).notNull(),
   zipCode: varchar("zipCode", { length: 20 }).notNull(),
   // Other
-  status: userStatus("status").default("pending").notNull(),
+  status: profileStatus("status").default("pending").notNull(),
   supabaseId: varchar("supabaseId").notNull().unique(),
 });
 
