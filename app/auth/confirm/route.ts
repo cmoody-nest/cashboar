@@ -16,11 +16,12 @@ const RequestSchema = z.object({
     ])
     .nullable(),
   token_hash: z.string().nullable(),
-  next: z.string().nullable().default("/"),
+  next: z.string().nullable(),
 });
 
 export async function GET(request: NextRequest) {
   return withLogger(request, async (request) => {
+    // Extract parameters from the URL
     const { searchParams } = new URL(request.url);
     const { token_hash, type, next } = RequestSchema.parse({
       token_hash: searchParams.get("token_hash"),
@@ -28,23 +29,24 @@ export async function GET(request: NextRequest) {
       next: searchParams.get("next"),
     });
 
+    // Attempt to verify the user using Supabase
     if (token_hash && type) {
       const supabase = await createClient();
 
-      const { error } = await supabase.auth.verifyOtp({
+      const { data, error } = await supabase.auth.verifyOtp({
         type,
         token_hash,
       });
 
-      if (!error) {
-        // redirect user to specified redirect URL or root of app
-        return NextResponse.redirect(
-          new URL(next ?? "/", env.NEXT_PUBLIC_BASE_URL),
-        );
+      // If verification is successful and a user is returned, redirect to the next URL or home
+      if (!error && data.user) {
+        const redirectUrl = new URL(next || "/", env.NEXT_PUBLIC_BASE_URL);
+
+        return NextResponse.redirect(redirectUrl);
       }
     }
 
-    // redirect the user to an error page with some instructions
+    // Otherwise, redirect to an error page
     return NextResponse.redirect(new URL("/error", env.NEXT_PUBLIC_BASE_URL));
   });
 }
