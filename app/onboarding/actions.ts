@@ -1,5 +1,6 @@
 "use server";
 
+import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { profiles } from "@/lib/db/schema";
@@ -26,4 +27,16 @@ export async function insertProfileData(formData: FormData) {
   await db.insert(profiles).values(values).onConflictDoNothing();
 
   redirect("/");
+}
+
+export async function getUserProfile(
+  supabaseId: (typeof profiles.$inferSelect)["supabaseId"],
+) {
+  const profile = await db
+    .select()
+    .from(profiles)
+    .where(eq(profiles.supabaseId, supabaseId))
+    .limit(1);
+
+  return profile.at(0);
 }
