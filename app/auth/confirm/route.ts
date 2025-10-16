@@ -16,7 +16,7 @@ const RequestSchema = z.object({
     ])
     .nullable(),
   token_hash: z.string().nullable(),
-  next: z.string().nullable().default("/"),
+  next: z.string().nullable(),
 });
 
 export async function GET(request: NextRequest) {
@@ -40,9 +40,9 @@ export async function GET(request: NextRequest) {
 
       // If verification is successful and a user is returned, redirect to the next URL or home
       if (!error && data.user) {
-        return NextResponse.redirect(
-          new URL(next ?? "/", env.NEXT_PUBLIC_BASE_URL),
-        );
+        const redirectUrl = new URL(next || "/", env.NEXT_PUBLIC_BASE_URL);
+
+        return NextResponse.redirect(redirectUrl);
       }
     }
 
