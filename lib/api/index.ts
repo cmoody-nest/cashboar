@@ -1,17 +1,10 @@
-import z from "zod";
-
-const PresignKeySchema = z.object({
-  iv: z.string(),
-});
-
-type PresignKey = z.infer<typeof PresignKeySchema>;
+import type z from "zod";
 
 type ApiRequestOptions<T> = {
   schema: z.ZodSchema<T>;
   apiKey?: string;
   params?: Record<string, unknown | unknown[]>;
   headers?: Record<string, string>;
-  presignUrl?: boolean;
   body?: unknown;
 };
 
@@ -24,26 +17,15 @@ export class ApiService {
 
   async GET<T>(
     path: string,
-    {
-      schema,
-      params,
-      headers,
-      presignUrl,
-      ...opts
-    }: Omit<ApiRequestOptions<T>, "body">,
+    { schema, params, headers, apiKey }: Omit<ApiRequestOptions<T>, "body">,
   ) {
     const url = this.buildUrl(path, params);
-    let token = opts.apiKey;
-
-    if (presignUrl) {
-      token = await this.getPresignKey(path, "GET", { params });
-    }
 
     return this.doRequest<T>(
       url.toString(),
       {
         method: "GET",
-        headers: this.buildHeaders(headers, token),
+        headers: this.buildHeaders(headers, apiKey),
       },
       schema,
     );
@@ -51,27 +33,15 @@ export class ApiService {
 
   async POST<T>(
     path: string,
-    {
-      schema,
-      params,
-      body,
-      headers,
-      presignUrl,
-      ...opts
-    }: ApiRequestOptions<T>,
+    { schema, params, body, headers, apiKey }: ApiRequestOptions<T>,
   ) {
     const url = this.buildUrl(path, params);
-    let token = opts.apiKey;
-
-    if (presignUrl) {
-      token = await this.getPresignKey(path, "POST", { body, params });
-    }
 
     return this.doRequest<T>(
       url.toString(),
       {
         method: "POST",
-        headers: this.buildHeaders(headers, token),
+        headers: this.buildHeaders(headers, apiKey),
         body: this.buildBody(body),
       },
       schema,
@@ -80,27 +50,15 @@ export class ApiService {
 
   async PUT<T>(
     path: string,
-    {
-      schema,
-      params,
-      body,
-      headers,
-      presignUrl,
-      ...opts
-    }: ApiRequestOptions<T>,
+    { schema, params, body, headers, apiKey }: ApiRequestOptions<T>,
   ) {
     const url = this.buildUrl(path, params);
-    let token = opts.apiKey;
-
-    if (presignUrl) {
-      token = await this.getPresignKey(path, "PUT", { body, params });
-    }
 
     return this.doRequest<T>(
       url.toString(),
       {
         method: "PUT",
-        headers: this.buildHeaders(headers, token),
+        headers: this.buildHeaders(headers, apiKey),
         body: this.buildBody(body),
       },
       schema,
@@ -109,20 +67,15 @@ export class ApiService {
 
   async PATCH<T>(
     path: string,
-    { schema, params, body, headers, ...opts }: ApiRequestOptions<T>,
+    { schema, params, body, headers, apiKey }: ApiRequestOptions<T>,
   ) {
     const url = this.buildUrl(path, params);
-    let token = opts.apiKey;
-
-    if (opts.presignUrl) {
-      token = await this.getPresignKey(path, "PATCH", { body, params });
-    }
 
     return this.doRequest<T>(
       url.toString(),
       {
         method: "PATCH",
-        headers: this.buildHeaders(headers, token),
+        headers: this.buildHeaders(headers, apiKey),
         body: this.buildBody(body),
       },
       schema,
@@ -131,26 +84,15 @@ export class ApiService {
 
   async DELETE<T>(
     path: string,
-    {
-      schema,
-      params,
-      headers,
-      presignUrl,
-      ...opts
-    }: Omit<ApiRequestOptions<T>, "body">,
+    { schema, params, headers, apiKey }: Omit<ApiRequestOptions<T>, "body">,
   ) {
     const url = this.buildUrl(path, params);
-    let token = opts.apiKey;
-
-    if (presignUrl) {
-      token = await this.getPresignKey(path, "DELETE", { params });
-    }
 
     return this.doRequest<T>(
       url.toString(),
       {
         method: "DELETE",
-        headers: this.buildHeaders(headers, token),
+        headers: this.buildHeaders(headers, apiKey),
       },
       schema,
     );
@@ -181,40 +123,19 @@ export class ApiService {
   }
 
   private buildHeaders(
-    initialHeaders: Record<string, string> = {
-      "Content-Type": "application/json",
-    },
+    initialHeaders: Record<string, string> = {},
     apiKey?: string,
   ) {
-    const headers: RequestInit["headers"] = { ...initialHeaders };
+    const headers: RequestInit["headers"] = {
+      "Content-Type": "application/json",
+      ...initialHeaders,
+    };
 
     if (apiKey) {
       headers.Authorization = `Bearer ${apiKey}`;
     }
 
     return headers;
-  }
-
-  private async getPresignKey<T>(
-    path: string,
-    method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
-    { body = {}, params = {} }: Pick<ApiRequestOptions<T>, "body" | "params">,
-  ): Promise<string> {
-    const url = this.buildUrl(path, params)
-      .toString()
-      .replace(this.baseUrl, "");
-
-    const presign = await this.POST<PresignKey>("/auth/presign-url", {
-      body: {
-        url,
-        body,
-        method,
-      },
-      schema: PresignKeySchema,
-      presignUrl: false, // Avoid double presign
-    });
-
-    return presign.iv;
   }
 
   private buildQueryString(params?: Record<string, unknown | unknown[]>) {
