@@ -5,7 +5,11 @@ type Props = HTMLProps<HTMLDivElement> & {
   direction?: "row" | "column";
 };
 
-function Flex({ direction = "row", ...props }: PropsWithChildren<Props>) {
+function Flex({
+  children,
+  direction = "row",
+  ...props
+}: PropsWithChildren<Props>) {
   return (
     <div
       className={cn(
@@ -14,7 +18,9 @@ function Flex({ direction = "row", ...props }: PropsWithChildren<Props>) {
         props.className,
       )}
       {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
