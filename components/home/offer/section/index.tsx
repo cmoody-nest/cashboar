@@ -17,6 +17,10 @@ type Props = {
   section: string;
 };
 
+function normalizeSectionName(section: string) {
+  return `${section.replace(/-/g, " ")} Offers`;
+}
+
 function HomeOfferSection({ section }: Props) {
   const offersQuery = useQuery({
     queryKey: ["offers", section],
@@ -32,7 +36,7 @@ function HomeOfferSection({ section }: Props) {
 
   return (
     <Flex direction="column" className="gap-2">
-      <h1 className="capitalize text-2xl font-bold">{`${section} Offers`}</h1>
+      <h1 className="text-2xl font-bold">{normalizeSectionName(section)}</h1>
       <Flex direction="row" className="gap-4 overflow-x-auto">
         {offersQuery.isFetching && <HomeOfferSectionPlaceholder />}
         {offersQuery.data &&
