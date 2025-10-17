@@ -2,10 +2,10 @@ import { Box } from "@/components/base/box";
 import { NavigationHeader } from "@/components/navigation/header";
 import { ReceiptScanner } from "@/components/receipt/scanner";
 
-export default function Home() {
+export default function Earn() {
   return (
     <Box>
-      <NavigationHeader />
+      <NavigationHeader label="Earn" />
       <ReceiptScanner />
     </Box>
   );

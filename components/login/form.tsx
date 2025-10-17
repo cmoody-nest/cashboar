@@ -14,6 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Flex } from "../base/flex";
 
 function validatePasswordComplexity(password: string) {
   if (!/[a-z]/.test(password) || !/[A-Z]/.test(password)) {
@@ -133,21 +134,23 @@ function LoginForm({ onLogin, onSignup }: Props) {
           )}
         />
 
-        <Button
-          type="submit"
-          value="login"
-          disabled={form.formState.isSubmitting || !form.formState.isValid}
-        >
-          Log In
-        </Button>
-        <Button
-          type="submit"
-          variant="outline"
-          value="signUp"
-          disabled={form.formState.isSubmitting || !form.formState.isValid}
-        >
-          Sign Up
-        </Button>
+        <Flex direction="row" className="gap-2">
+          <Button
+            type="submit"
+            value="login"
+            disabled={form.formState.isSubmitting || !form.formState.isValid}
+          >
+            Log In
+          </Button>
+          <Button
+            type="submit"
+            variant="outline"
+            value="signUp"
+            disabled={form.formState.isSubmitting || !form.formState.isValid}
+          >
+            Sign Up
+          </Button>
+        </Flex>
       </form>
     </Form>
   );
