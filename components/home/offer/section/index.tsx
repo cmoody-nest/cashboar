@@ -18,7 +18,13 @@ type Props = {
 };
 
 function normalizeSectionName(section: string) {
-  return `${section.replace(/-/g, " ")} Offers`;
+  const normalizedSection = section.replace(/-/g, " ");
+  const capitalizedSection = normalizedSection
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+
+  return `${capitalizedSection} Offers`;
 }
 
 function HomeOfferSection({ section }: Props) {
