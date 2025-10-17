@@ -1,10 +1,9 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import states from "states-us";
-import z from "zod";
+import type z from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -22,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useZipCode } from "@/hooks/onboarding/use-zip-code";
 import { OnboardingProfileDataSchema } from "@/lib/onboarding/schema";
 
 const stateOptions = states.map((state) => ({
@@ -34,20 +34,6 @@ export const formSchema = OnboardingProfileDataSchema.pick({
   city: true,
   zipCode: true,
 });
-
-const zipStaticApiResponseSchema = z.object({
-  country: z.literal("US"),
-  state: z.string().min(2),
-  city: z.string().min(2),
-});
-
-function decapitalizeCity(city: string) {
-  return city
-    .toLowerCase()
-    .split(" ")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-}
 
 type FormValues = z.infer<typeof formSchema>;
 type Props = {
@@ -66,32 +52,21 @@ function OnboardingLocationForm({ onSubmit }: Props) {
   });
   const zipCode = form.watch("zipCode");
 
-  const zipCodeQuery = useQuery({
-    queryKey: ["location", zipCode],
-    queryFn: async () => {
-      const response = await fetch(`https://ZiptasticAPI.com/${zipCode}`);
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const json = await response.json();
-      const { state, city } = zipStaticApiResponseSchema.parse(json);
-
+  const zipCodeQuery = useZipCode({
+    zipCode,
+    onSuccess: ({ city, state }) => {
       form.setValue("state", state, {
         shouldDirty: true,
         shouldValidate: true,
         shouldTouch: true,
       });
-      form.setValue("city", decapitalizeCity(city), {
+
+      form.setValue("city", city, {
         shouldDirty: true,
         shouldValidate: true,
         shouldTouch: true,
       });
-
-      return json;
     },
-    enabled: zipCode.length >= 5,
   });
 
   return (
