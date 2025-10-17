@@ -2,9 +2,9 @@ import type { HTMLProps, PropsWithChildren } from "react";
 
 type Props = HTMLProps<HTMLDivElement>;
 
-function Box({ children, ...props }: PropsWithChildren<Props>) {
+function Box({ children, className, ...props }: PropsWithChildren<Props>) {
   return (
-    <div className={props.className} {...props}>
+    <div className={className} {...props}>
       {children}
     </div>
   );
