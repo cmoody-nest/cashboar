@@ -31,30 +31,16 @@ function HomeOfferSection({ section }: Props) {
     },
   });
 
-  const isDataLoaded = useMemo(() => {
-    if (offersQuery.isFetching) {
-      return false;
-    }
-
-    if (offersQuery.isError) {
-      return false;
-    }
-
-    if (!offersQuery.data) {
-      return false;
-    }
-
-    return true;
-  }, [offersQuery.isFetching, offersQuery.isError, offersQuery.data]);
-
   return (
     <Flex direction="column" className="gap-2">
       <h1 className="capitalize text-2xl font-bold">{`${section} Offers`}</h1>
       <Flex direction="row" className="gap-4 overflow-x-auto">
         {offersQuery.isFetching && <HomeOfferSectionPlaceholder />}
-        {offersQuery.data && isDataLoaded && (
-          <HomeOffersSectionList offers={offersQuery.data} />
-        )}
+        {offersQuery.data &&
+          !offersQuery.isFetching &&
+          !offersQuery.isError && (
+            <HomeOffersSectionList offers={offersQuery.data} />
+          )}
         {offersQuery.isError && <HomeOffersSectionError />}
       </Flex>
     </Flex>
