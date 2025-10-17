@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { PostHogProvider, QueryProvider } from "@/app/providers";
+import { Toaster } from "@/components/ui/sonner";
 import "@/app/globals.css";
 
 const geistSans = Geist({
@@ -31,6 +32,7 @@ export default function RootLayout({
         <QueryProvider>
           <PostHogProvider>{children}</PostHogProvider>
         </QueryProvider>
+        <Toaster />
       </body>
     </html>
   );
