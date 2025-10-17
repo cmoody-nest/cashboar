@@ -23,6 +23,7 @@ export const env = createEnv({
       .string()
       .min(1, { message: "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY is required" }),
     NEXT_PUBLIC_BASE_URL: z.url().default("http://localhost:3000"),
+    NEXT_PUBLIC_CORESAVE_API_URL: z.url().default("http://localhost:4000"),
   },
   runtimeEnv: {
     // Server
@@ -36,5 +37,6 @@ export const env = createEnv({
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
     NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
+    NEXT_PUBLIC_CORESAVE_API_URL: process.env.NEXT_PUBLIC_CORESAVE_API_URL,
   },
 });
