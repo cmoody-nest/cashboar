@@ -1,7 +1,6 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
 import z from "zod";
 import { Flex } from "@/components/base/flex";
 import { HomeOffersSectionError } from "@/components/home/offer/section/error";
