@@ -1,17 +1,12 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import z from "zod";
 import { Flex } from "@/components/base/flex";
 import { HomeOffersSectionError } from "@/components/home/offer/section/error";
 import { HomeOffersSectionList } from "@/components/home/offer/section/list";
 import { HomeOfferSectionPlaceholder } from "@/components/home/offer/section/placeholder";
 import { apiService } from "@/lib/api";
-import { OfferSchema } from "@/lib/types/offer";
-
-const OffersResponseSchema = z.object({
-  data: z.array(OfferSchema),
-});
+import { OffersResponseSchema } from "@/lib/types/offer";
 
 type Props = {
   section: string;
