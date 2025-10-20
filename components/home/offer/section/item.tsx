@@ -26,10 +26,10 @@ type Props = {
 function HomeOfferSectionItem({ offer }: Props) {
   const userQuery = useUser();
   const saveOfferMutation = useMutation({
-    mutationKey: ["claim-offer", offer.id],
+    mutationKey: ["save-offer", offer.id],
     mutationFn: async () => {
       return apiService.POST(
-        `/customer-offers/${userQuery.data?.id}/claim/${offer.id}`,
+        `/customer-offers/${userQuery.data?.id}/save/${offer.id}`,
         {
           schema: z.unknown(),
           params: { organizationId: env.NEXT_PUBLIC_CORESAVE_ORGANIZATION_ID },
@@ -47,11 +47,11 @@ function HomeOfferSectionItem({ offer }: Props) {
     },
   });
 
-  const onClaimOfferClick = useCallback(() => {
+  const onSaveOfferClick = useCallback(() => {
     saveOfferMutation.mutate();
   }, [saveOfferMutation]);
 
-  const isClaimOfferDisabled = useMemo(() => {
+  const isSaveOfferDisabled = useMemo(() => {
     return (
       saveOfferMutation.isPending || userQuery.isLoading || !userQuery.data
     );
@@ -82,10 +82,10 @@ function HomeOfferSectionItem({ offer }: Props) {
         <Button
           type="button"
           variant="outline"
-          disabled={isClaimOfferDisabled}
-          onClick={onClaimOfferClick}
+          disabled={isSaveOfferDisabled}
+          onClick={onSaveOfferClick}
         >
-          Claim Offer
+          Save Offer
         </Button>
       </CardFooter>
     </Card>
