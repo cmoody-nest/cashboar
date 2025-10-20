@@ -1,4 +1,10 @@
+"use client";
+
+import { useMutation } from "@tanstack/react-query";
 import Image from "next/image";
+import { useCallback, useMemo } from "react";
+import { toast } from "sonner";
+import z from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,6 +14,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useUser } from "@/hooks/auth/use-user";
+import { apiService } from "@/lib/api";
+import { env } from "@/lib/env";
 import type { Offer } from "@/lib/types/offer";
 
 type Props = {
@@ -15,6 +24,39 @@ type Props = {
 };
 
 function HomeOfferSectionItem({ offer }: Props) {
+  const userQuery = useUser();
+  const saveOfferMutation = useMutation({
+    mutationKey: ["save-offer", offer.id],
+    mutationFn: async () => {
+      return apiService.POST(
+        `/customer-offers/${userQuery.data?.id}/claim/${offer.id}`,
+        {
+          schema: z.unknown(),
+          params: { organizationId: env.NEXT_PUBLIC_CORESAVE_ORGANIZATION_ID },
+          body: {},
+          presignUrl: true,
+        },
+      );
+    },
+    onSuccess: () => {
+      toast.success("Offer saved successfully!");
+    },
+    onError: (error) => {
+      console.error("Error saving offer:", error);
+      toast.error("Failed to save the offer. Please try again.");
+    },
+  });
+
+  const onSaveOfferClick = useCallback(() => {
+    saveOfferMutation.mutate();
+  }, [saveOfferMutation]);
+
+  const isSaveOfferDisabled = useMemo(() => {
+    return (
+      saveOfferMutation.isPending || userQuery.isLoading || !userQuery.data
+    );
+  }, [saveOfferMutation, userQuery]);
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -37,7 +79,14 @@ function HomeOfferSectionItem({ offer }: Props) {
       </CardContent>
       <CardFooter className="gap-2">
         <Button variant="default">View Offer</Button>
-        <Button variant="outline">Save Offer</Button>
+        <Button
+          type="button"
+          variant="outline"
+          disabled={isSaveOfferDisabled}
+          onClick={onSaveOfferClick}
+        >
+          Save Offer
+        </Button>
       </CardFooter>
     </Card>
   );
