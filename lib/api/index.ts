@@ -1,4 +1,5 @@
 import type z from "zod";
+import { env } from "@/lib/env";
 
 type ApiRequestOptions<T> = {
   schema: z.ZodSchema<T>;
@@ -169,3 +170,5 @@ export class ApiService {
     return JSON.stringify(body);
   }
 }
+
+export const apiService = new ApiService(env.NEXT_PUBLIC_CORESAVE_API_URL);

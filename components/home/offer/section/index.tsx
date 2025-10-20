@@ -6,7 +6,7 @@ import { Flex } from "@/components/base/flex";
 import { HomeOffersSectionError } from "@/components/home/offer/section/error";
 import { HomeOffersSectionList } from "@/components/home/offer/section/list";
 import { HomeOfferSectionPlaceholder } from "@/components/home/offer/section/placeholder";
-import { clientApiService } from "@/lib/api/client";
+import { apiService } from "@/lib/api";
 import { OfferSchema } from "@/lib/types/offer";
 
 const OffersResponseSchema = z.object({
@@ -31,7 +31,7 @@ function HomeOfferSection({ section }: Props) {
   const offersQuery = useQuery({
     queryKey: ["offers", section],
     queryFn: async () => {
-      const { data } = await clientApiService.GET("/offers", {
+      const { data } = await apiService.GET("/offers", {
         params: { section, limit: 5 },
         schema: OffersResponseSchema,
       });
