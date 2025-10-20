@@ -1,9 +1,16 @@
-import type z from "zod";
+import z from "zod";
 import { env } from "@/lib/env";
+
+const PresignKeySchema = z.object({
+  iv: z.string(),
+});
+
+type PresignKey = z.infer<typeof PresignKeySchema>;
 
 type ApiRequestOptions<T> = {
   schema: z.ZodSchema<T>;
   apiKey?: string;
+  presignUrl?: boolean;
   params?: Record<string, unknown | unknown[]>;
   headers?: Record<string, string>;
   body?: unknown;
@@ -18,15 +25,26 @@ export class ApiService {
 
   async GET<T>(
     path: string,
-    { schema, params, headers, apiKey }: Omit<ApiRequestOptions<T>, "body">,
+    {
+      schema,
+      params,
+      headers,
+      apiKey,
+      presignUrl,
+    }: Omit<ApiRequestOptions<T>, "body">,
   ) {
     const url = this.buildUrl(path, params);
+    let token = apiKey;
+
+    if (presignUrl) {
+      token = await this.getPresignKey<T>(path, "GET", { params });
+    }
 
     return this.doRequest<T>(
       url.toString(),
       {
         method: "GET",
-        headers: this.buildHeaders(headers, apiKey),
+        headers: this.buildHeaders(headers, token),
       },
       schema,
     );
@@ -34,15 +52,20 @@ export class ApiService {
 
   async POST<T>(
     path: string,
-    { schema, params, body, headers, apiKey }: ApiRequestOptions<T>,
+    { schema, params, body, headers, apiKey, presignUrl }: ApiRequestOptions<T>,
   ) {
     const url = this.buildUrl(path, params);
+    let token = apiKey;
+
+    if (presignUrl) {
+      token = await this.getPresignKey<T>(path, "POST", { body, params });
+    }
 
     return this.doRequest<T>(
       url.toString(),
       {
         method: "POST",
-        headers: this.buildHeaders(headers, apiKey),
+        headers: this.buildHeaders(headers, token),
         body: this.buildBody(body),
       },
       schema,
@@ -51,15 +74,20 @@ export class ApiService {
 
   async PUT<T>(
     path: string,
-    { schema, params, body, headers, apiKey }: ApiRequestOptions<T>,
+    { schema, params, body, headers, apiKey, presignUrl }: ApiRequestOptions<T>,
   ) {
     const url = this.buildUrl(path, params);
+    let token = apiKey;
+
+    if (presignUrl) {
+      token = await this.getPresignKey<T>(path, "PUT", { body, params });
+    }
 
     return this.doRequest<T>(
       url.toString(),
       {
         method: "PUT",
-        headers: this.buildHeaders(headers, apiKey),
+        headers: this.buildHeaders(headers, token),
         body: this.buildBody(body),
       },
       schema,
@@ -68,15 +96,20 @@ export class ApiService {
 
   async PATCH<T>(
     path: string,
-    { schema, params, body, headers, apiKey }: ApiRequestOptions<T>,
+    { schema, params, body, headers, apiKey, presignUrl }: ApiRequestOptions<T>,
   ) {
     const url = this.buildUrl(path, params);
+    let token = apiKey;
+
+    if (presignUrl) {
+      token = await this.getPresignKey<T>(path, "PATCH", { body, params });
+    }
 
     return this.doRequest<T>(
       url.toString(),
       {
         method: "PATCH",
-        headers: this.buildHeaders(headers, apiKey),
+        headers: this.buildHeaders(headers, token),
         body: this.buildBody(body),
       },
       schema,
@@ -85,15 +118,26 @@ export class ApiService {
 
   async DELETE<T>(
     path: string,
-    { schema, params, headers, apiKey }: Omit<ApiRequestOptions<T>, "body">,
+    {
+      schema,
+      params,
+      headers,
+      apiKey,
+      presignUrl,
+    }: Omit<ApiRequestOptions<T>, "body">,
   ) {
     const url = this.buildUrl(path, params);
+    let token = apiKey;
+
+    if (presignUrl) {
+      token = await this.getPresignKey<T>(path, "DELETE", { params, body: {} });
+    }
 
     return this.doRequest<T>(
       url.toString(),
       {
         method: "DELETE",
-        headers: this.buildHeaders(headers, apiKey),
+        headers: this.buildHeaders(headers, token),
       },
       schema,
     );
@@ -168,6 +212,28 @@ export class ApiService {
     }
 
     return JSON.stringify(body);
+  }
+
+  private async getPresignKey<T>(
+    path: string,
+    method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
+    { body = {}, params = {} }: Pick<ApiRequestOptions<T>, "body" | "params">,
+  ): Promise<string> {
+    const url = this.buildUrl(path, params)
+      .toString()
+      .replace(this.baseUrl, "");
+
+    const presign = await this.POST<PresignKey>("/auth/presign-url", {
+      body: {
+        url,
+        body,
+        method,
+      },
+      schema: PresignKeySchema,
+      presignUrl: false, // Avoid double presign
+    });
+
+    return presign.iv;
   }
 }
 
