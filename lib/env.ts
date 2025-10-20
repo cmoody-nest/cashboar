@@ -11,6 +11,12 @@ export const env = createEnv({
     RESEND_WEBHOOK_SECRET: z
       .string()
       .min(1, { message: "RESEND_WEBHOOK_SECRET is required" }),
+    CORESAVE_ORGANIZATION_ID: z
+      .string()
+      .min(1, { message: "CORESAVE_ORGANIZATION_ID is required" }),
+    CORESAVE_API_KEY: z
+      .string()
+      .min(1, { message: "CORESAVE_API_KEY is required" }),
   },
   client: {
     NEXT_PUBLIC_POSTHOG_KEY: z
@@ -31,6 +37,8 @@ export const env = createEnv({
     NODE_ENV: process.env.NODE_ENV,
     DATABASE_URL: process.env.DATABASE_URL,
     RESEND_WEBHOOK_SECRET: process.env.RESEND_WEBHOOK_SECRET,
+    CORESAVE_ORGANIZATION_ID: process.env.CORESAVE_ORGANIZATION_ID,
+    CORESAVE_API_KEY: process.env.CORESAVE_API_KEY,
     // Client
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
