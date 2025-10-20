@@ -5,6 +5,10 @@
 2. Create a `.env` file based on `lib/env.ts` and fill in required environment variables
 3. Run `npm run dev` to start the development server
 
+### 🚀 Supabase
+- Database migrations are managed by Drizzle ORM
+- Ensure that the invite link email uses the correct URL: `<a href="{{ .RedirectTo }}auth/confirm?token_hash={{ .TokenHash }}&type=email&next=/onboarding">Confirm your mail</a>`
+
 ### 🪵 Logging
 
 - Local logs: pretty printed in the terminal
