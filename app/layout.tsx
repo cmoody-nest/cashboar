@@ -32,7 +32,7 @@ export default function RootLayout({
         <QueryProvider>
           <PostHogProvider>{children}</PostHogProvider>
         </QueryProvider>
-        <Toaster />
+        <Toaster position="top-center" />
       </body>
     </html>
   );
