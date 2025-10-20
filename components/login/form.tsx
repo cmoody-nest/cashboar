@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { type BaseSyntheticEvent, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -52,6 +53,7 @@ type Props = {
 };
 
 function LoginForm({ onLogin, onSignup }: Props) {
+  const router = useRouter();
   const form = useForm<FormValues>({
     mode: "onTouched",
     resolver: zodResolver(formSchema),
@@ -74,8 +76,11 @@ function LoginForm({ onLogin, onSignup }: Props) {
           case "login":
             await onLogin(formData)
               .then(() => {
-                toast.success("Login successful");
+                toast.success("Login successful", {
+                  description: "Welcome back!",
+                });
                 form.reset();
+                router.push("/");
               })
               .catch((error) => {
                 console.error("Login error:", error);
@@ -85,7 +90,10 @@ function LoginForm({ onLogin, onSignup }: Props) {
           case "signUp":
             await onSignup(formData)
               .then(() => {
-                toast.success("Signup successful");
+                toast.success("Signup successful", {
+                  description:
+                    "Please check your email to verify your account.",
+                });
                 form.reset();
               })
               .catch((error) => {
@@ -99,7 +107,7 @@ function LoginForm({ onLogin, onSignup }: Props) {
         }
       }
     },
-    [onLogin, onSignup, form],
+    [onLogin, onSignup, form, router],
   );
 
   return (
