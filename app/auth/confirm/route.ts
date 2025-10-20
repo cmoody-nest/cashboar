@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import z from "zod";
+import { apiService } from "@/lib/api";
 import { env } from "@/lib/env";
 import { withLogger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase/server";
@@ -40,6 +41,16 @@ export async function GET(request: NextRequest) {
 
       // If verification is successful and a user is returned, redirect to the next URL or home
       if (!error && data.user) {
+        // Send the user information to CoreSave
+        await apiService.POST("/customers/ensure", {
+          schema: z.unknown(),
+          body: {
+            externalId: data.user.id,
+            organizationId: env.CORESAVE_ORGANIZATION_ID,
+          },
+          presignUrl: true,
+        });
+
         const redirectUrl = new URL(next || "/", env.NEXT_PUBLIC_BASE_URL);
 
         return NextResponse.redirect(redirectUrl);
