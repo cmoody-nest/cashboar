@@ -3,7 +3,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type BaseSyntheticEvent, useCallback } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import z from "zod";
+import { Flex } from "@/components/base/flex";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -14,7 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Flex } from "../base/flex";
+import { isRedirect } from "@/lib/error/utils";
 
 function validatePasswordComplexity(password: string) {
   if (!/[a-z]/.test(password) || !/[A-Z]/.test(password)) {
@@ -71,10 +73,39 @@ function LoginForm({ onLogin, onSignup }: Props) {
 
         switch (action) {
           case "login":
-            await onLogin(formData);
+            await onLogin(formData)
+              .then(() => {
+                toast.success("Login successful");
+                form.reset();
+              })
+              .catch((error) => {
+                if (isRedirect(error)) {
+                  return;
+                }
+
+                console.error("Login error:", error);
+                toast.error("Login failed", {
+                  description: "Please check your credentials and try again.",
+                });
+              });
             break;
           case "signUp":
-            await onSignup(formData);
+            await onSignup(formData)
+              .then(() => {
+                toast.success("Signup successful");
+                form.reset();
+              })
+              .catch((error) => {
+                if (isRedirect(error)) {
+                  return;
+                }
+
+                console.error("Signup error:", error);
+                toast.error("Signup failed", {
+                  description:
+                    "We're unable to create your account at this time. Please try again later.",
+                });
+              });
             break;
           default:
             console.error("Unknown action:", action);
@@ -82,7 +113,7 @@ function LoginForm({ onLogin, onSignup }: Props) {
         }
       }
     },
-    [onLogin, onSignup],
+    [onLogin, onSignup, form],
   );
 
   return (
