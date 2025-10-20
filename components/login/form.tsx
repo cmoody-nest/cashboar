@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type BaseSyntheticEvent, useCallback } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import z from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -71,10 +72,26 @@ function LoginForm({ onLogin, onSignup }: Props) {
 
         switch (action) {
           case "login":
-            await onLogin(formData);
+            await onLogin(formData)
+              .then(() => {
+                toast.success("Login successful");
+                form.reset();
+              })
+              .catch((error) => {
+                console.error("Login error:", error);
+                toast.error("Login failed");
+              });
             break;
           case "signUp":
-            await onSignup(formData);
+            await onSignup(formData)
+              .then(() => {
+                toast.success("Signup successful");
+                form.reset();
+              })
+              .catch((error) => {
+                console.error("Signup error:", error);
+                toast.error("Signup failed");
+              });
             break;
           default:
             console.error("Unknown action:", action);
@@ -82,7 +99,7 @@ function LoginForm({ onLogin, onSignup }: Props) {
         }
       }
     },
-    [onLogin, onSignup],
+    [onLogin, onSignup, form],
   );
 
   return (
