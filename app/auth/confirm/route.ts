@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
           const { error } = await resend.emails.send({
             from: env.RESEND_SENDER_EMAIL,
             to: [data.user.email],
-            subject: "Welcome  — Let’s Turn Actions into Rewards!",
+            subject: "Welcome - Let’s Turn Actions into Rewards!",
             react: WelcomeEmail(),
           });
 
