@@ -50,9 +50,32 @@ export const receipts = pgTable("receipts", {
     }),
 }).enableRLS();
 
+export const savedOffers = pgTable("saved_offers", {
+  id: serial("id").primaryKey(),
+  offerId: varchar("offerId", { length: 256 }).notNull(),
+  offerwallType: offerwallType("offerwallType").notNull(),
+  profileId: integer("profileId")
+    .notNull()
+    .references(() => profiles.id, {
+      onDelete: "cascade",
+    }),
+}).enableRLS();
+
+export const profilesRelations = relations(profiles, ({ many }) => ({
+  receipts: many(receipts),
+  savedOffers: many(savedOffers),
+}));
+
 export const receiptsRelations = relations(receipts, ({ one }) => ({
   profile: one(profiles, {
     fields: [receipts.profileId],
+    references: [profiles.id],
+  }),
+}));
+
+export const savedOffersRelations = relations(savedOffers, ({ one }) => ({
+  profile: one(profiles, {
+    fields: [savedOffers.profileId],
     references: [profiles.id],
   }),
 }));

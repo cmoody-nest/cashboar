@@ -120,6 +120,13 @@
       "when": 1761167827177,
       "tag": "0016_brief_night_thrasher",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1761167931291,
+      "tag": "0017_breezy_sprite",
+      "breakpoints": true
     }
   ]
 }
