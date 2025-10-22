@@ -1,4 +1,6 @@
+import { relations } from "drizzle-orm";
 import {
+  integer,
   pgEnum,
   pgTable,
   serial,
@@ -40,7 +42,16 @@ export const resend_webhooks = pgTable("resend_webhooks", {
 export const receipts = pgTable("receipts", {
   id: serial("id").primaryKey(),
   url: varchar("url", { length: 1024 }).notNull(),
-  profileId: serial("profileId")
+  profileId: integer("profileId")
     .notNull()
-    .references(() => profiles.id),
+    .references(() => profiles.id, {
+      onDelete: "cascade",
+    }),
 }).enableRLS();
+
+export const receiptsRelations = relations(receipts, ({ one }) => ({
+  profile: one(profiles, {
+    fields: [receipts.profileId],
+    references: [profiles.id],
+  }),
+}));
