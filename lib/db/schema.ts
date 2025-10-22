@@ -36,3 +36,11 @@ export const resend_webhooks = pgTable("resend_webhooks", {
   timestamp: timestamp("timestamp").defaultNow().notNull(),
   deliveryStatus: varchar("deliveryStatus", { length: 256 }).notNull(),
 });
+
+export const receipts = pgTable("receipts", {
+  id: serial("id").primaryKey(),
+  url: varchar("url", { length: 1024 }).notNull(),
+  profileId: serial("profileId")
+    .notNull()
+    .references(() => profiles.id),
+});
