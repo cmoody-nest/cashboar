@@ -10,6 +10,12 @@ export const env = createEnv({
     // Supabase
     DATABASE_URL: z.string().min(1, { message: "DATABASE_URL is required" }),
     // Resend
+    RESEND_SENDER_EMAIL: z
+      .string()
+      .default("KnockKnockCash <noreply@knockknockcash.com>"),
+    RESEND_API_KEY: z
+      .string()
+      .min(1, { message: "RESEND_API_KEY is required" }),
     RESEND_WEBHOOK_SECRET: z
       .string()
       .min(1, { message: "RESEND_WEBHOOK_SECRET is required" }),
@@ -48,6 +54,8 @@ export const env = createEnv({
     LOG_LEVEL: process.env.LOG_LEVEL,
     NODE_ENV: process.env.NODE_ENV,
     DATABASE_URL: process.env.DATABASE_URL,
+    RESEND_SENDER_EMAIL: process.env.RESEND_SENDER_EMAIL,
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
     RESEND_WEBHOOK_SECRET: process.env.RESEND_WEBHOOK_SECRET,
     VERYFI_CLIENT_ID: process.env.VERYFI_CLIENT_ID,
     VERYFI_CLIENT_SECRET: process.env.VERYFI_CLIENT_SECRET,
