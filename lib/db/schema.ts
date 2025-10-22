@@ -26,7 +26,7 @@ export const profiles = pgTable("profiles", {
   zipCode: varchar("zipCode", { length: 20 }).notNull(),
   // Other
   supabaseId: varchar("supabaseId").notNull().unique(),
-});
+}).enableRLS();
 
 export const resend_webhooks = pgTable("resend_webhooks", {
   id: serial("id").primaryKey(),
@@ -35,4 +35,12 @@ export const resend_webhooks = pgTable("resend_webhooks", {
   recipient: varchar("recipient", { length: 256 }).notNull(),
   timestamp: timestamp("timestamp").defaultNow().notNull(),
   deliveryStatus: varchar("deliveryStatus", { length: 256 }).notNull(),
-});
+}).enableRLS();
+
+export const receipts = pgTable("receipts", {
+  id: serial("id").primaryKey(),
+  url: varchar("url", { length: 1024 }).notNull(),
+  profileId: serial("profileId")
+    .notNull()
+    .references(() => profiles.id),
+}).enableRLS();
