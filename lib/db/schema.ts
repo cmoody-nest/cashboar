@@ -8,12 +8,13 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
-export const genderEnum = pgEnum("gender", ["male", "female"]);
+export const gender = pgEnum("gender", ["male", "female"]);
 export const profileStatus = pgEnum("profile_status", [
   "active",
   "pending",
   "suspended",
 ]);
+export const offerwallType = pgEnum("offerwall_type", ["coresave", "besitos"]);
 
 export const profiles = pgTable("profiles", {
   id: serial("id").primaryKey(),
@@ -21,7 +22,7 @@ export const profiles = pgTable("profiles", {
   firstName: varchar("firstName", { length: 256 }).notNull(),
   lastName: varchar("lastName", { length: 256 }).notNull(),
   dateOfBirth: timestamp("dateOfBirth").notNull(),
-  gender: genderEnum("gender").notNull(),
+  gender: gender("gender").notNull(),
   // Location
   state: varchar("state", { length: 256 }).notNull(),
   city: varchar("city", { length: 256 }).notNull(),

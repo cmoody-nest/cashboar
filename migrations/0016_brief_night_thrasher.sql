@@ -1,0 +1,1 @@
+CREATE TYPE "public"."offerwall_type" AS ENUM('coresave', 'besitos');
