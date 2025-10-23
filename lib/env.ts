@@ -19,6 +19,10 @@ export const env = createEnv({
     RESEND_WEBHOOK_SECRET: z
       .string()
       .min(1, { message: "RESEND_WEBHOOK_SECRET is required" }),
+    // CoreSave
+    CORESAVE_ORGANIZATION_ID: z
+      .string()
+      .min(1, { message: "CORESAVE_ORGANIZATION_ID is required" }),
     // Veryfi
     VERYFI_CLIENT_ID: z
       .string()
@@ -61,6 +65,7 @@ export const env = createEnv({
     VERYFI_CLIENT_SECRET: process.env.VERYFI_CLIENT_SECRET,
     VERYFI_USERNAME: process.env.VERYFI_USERNAME,
     VERYFI_API_KEY: process.env.VERYFI_API_KEY,
+    CORESAVE_ORGANIZATION_ID: process.env.CORESAVE_ORGANIZATION_ID,
     // Client
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
