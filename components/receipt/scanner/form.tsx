@@ -93,7 +93,7 @@ function ReceiptScannerForm() {
     const image = ref.current.getScreenshot();
 
     if (!image) {
-      // TODO: Handle error
+      toast.error("Failed to capture image. Please try again.");
       return;
     }
 
@@ -114,10 +114,6 @@ function ReceiptScannerForm() {
 
   const onSubmit = useCallback(
     async ({ image }: FormValues) => {
-      if (!image) {
-        return;
-      }
-
       const canvas = await convertImageToCanvas(image, crop);
       const url = canvas.toDataURL("image/png");
 
