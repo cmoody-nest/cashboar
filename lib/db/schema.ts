@@ -5,6 +5,7 @@ import {
   pgTable,
   serial,
   timestamp,
+  uniqueIndex,
   varchar,
 } from "drizzle-orm/pg-core";
 
@@ -51,21 +52,31 @@ export const receipts = pgTable("receipts", {
     }),
 }).enableRLS();
 
-export const profileOffers = pgTable("profile_offers", {
-  id: serial("id").primaryKey(),
-  offerId: varchar("offerId", { length: 256 }).notNull(),
-  offerwallType: offerwallType("offerwallType").notNull(),
-  status: offerStatus("status").notNull(),
-  profileId: integer("profileId")
-    .notNull()
-    .references(() => profiles.id, {
-      onDelete: "cascade",
-    }),
-}).enableRLS();
+export const profile_offers = pgTable(
+  "profile_offers",
+  {
+    id: serial("id").primaryKey(),
+    offerId: varchar("offerId", { length: 256 }).notNull(),
+    offerwallType: offerwallType("offerwallType").notNull(),
+    status: offerStatus("status").notNull(),
+    profileId: integer("profileId")
+      .notNull()
+      .references(() => profiles.id, {
+        onDelete: "cascade",
+      }),
+  },
+  (table) => [
+    uniqueIndex("idx_profile_offer_unique_offer_per_profile").on(
+      table.offerId,
+      table.offerwallType,
+      table.profileId,
+    ),
+  ],
+).enableRLS();
 
 export const profilesRelations = relations(profiles, ({ many }) => ({
   receipts: many(receipts),
-  savedOffers: many(profileOffers),
+  savedOffers: many(profile_offers),
 }));
 
 export const receiptsRelations = relations(receipts, ({ one }) => ({
@@ -75,9 +86,9 @@ export const receiptsRelations = relations(receipts, ({ one }) => ({
   }),
 }));
 
-export const profilesOffersRelations = relations(profileOffers, ({ one }) => ({
+export const profilesOffersRelations = relations(profile_offers, ({ one }) => ({
   profile: one(profiles, {
-    fields: [profileOffers.profileId],
+    fields: [profile_offers.profileId],
     references: [profiles.id],
   }),
 }));
