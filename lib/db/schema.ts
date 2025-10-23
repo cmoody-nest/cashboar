@@ -5,6 +5,7 @@ import {
   pgTable,
   serial,
   timestamp,
+  uniqueIndex,
   varchar,
 } from "drizzle-orm/pg-core";
 
@@ -15,6 +16,7 @@ export const profileStatus = pgEnum("profile_status", [
   "suspended",
 ]);
 export const offerwallType = pgEnum("offerwall_type", ["coresave", "besitos"]);
+export const offerStatus = pgEnum("offer_status", ["claimed", "completed"]);
 
 export const profiles = pgTable("profiles", {
   id: serial("id").primaryKey(),
@@ -50,20 +52,32 @@ export const receipts = pgTable("receipts", {
     }),
 }).enableRLS();
 
-export const savedOffers = pgTable("saved_offers", {
-  id: serial("id").primaryKey(),
-  offerId: varchar("offerId", { length: 256 }).notNull(),
-  offerwallType: offerwallType("offerwallType").notNull(),
-  profileId: integer("profileId")
-    .notNull()
-    .references(() => profiles.id, {
-      onDelete: "cascade",
-    }),
-}).enableRLS();
+export const profile_offers = pgTable(
+  "profile_offers",
+  {
+    id: serial("id").primaryKey(),
+    offerId: varchar("offerId", { length: 256 }).notNull(),
+    offerwallType: offerwallType("offerwallType").notNull(),
+    status: offerStatus("status").notNull(),
+    source: varchar("source", { length: 512 }).notNull(),
+    profileId: integer("profileId")
+      .notNull()
+      .references(() => profiles.id, {
+        onDelete: "cascade",
+      }),
+  },
+  (table) => [
+    uniqueIndex("idx_profile_offer_unique_offer_per_profile").on(
+      table.offerId,
+      table.offerwallType,
+      table.profileId,
+    ),
+  ],
+).enableRLS();
 
 export const profilesRelations = relations(profiles, ({ many }) => ({
   receipts: many(receipts),
-  savedOffers: many(savedOffers),
+  savedOffers: many(profile_offers),
 }));
 
 export const receiptsRelations = relations(receipts, ({ one }) => ({
@@ -73,9 +87,9 @@ export const receiptsRelations = relations(receipts, ({ one }) => ({
   }),
 }));
 
-export const savedOffersRelations = relations(savedOffers, ({ one }) => ({
+export const profilesOffersRelations = relations(profile_offers, ({ one }) => ({
   profile: one(profiles, {
-    fields: [savedOffers.profileId],
+    fields: [profile_offers.profileId],
     references: [profiles.id],
   }),
 }));

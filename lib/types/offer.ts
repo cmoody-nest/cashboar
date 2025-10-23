@@ -10,3 +10,9 @@ export const OfferSchema = z.object({
 });
 
 export type Offer = z.infer<typeof OfferSchema>;
+
+export const ClaimedOfferSchema = z.object({
+  offerUrl: z.url(),
+});
+
+export type ClaimedOffer = z.infer<typeof ClaimedOfferSchema>;

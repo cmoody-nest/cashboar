@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "idx_profile_offer_unique_offer_per_profile" ON "profile_offers" USING btree ("offerId","offerwallType","profileId");

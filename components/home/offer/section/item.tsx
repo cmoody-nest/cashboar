@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import type { Offer } from "@/lib/types/offer";
+import { HomeOfferSectionClaimOfferForm } from "./claim-offer/form";
 
 type Props = {
   offer: Offer;
@@ -37,7 +38,7 @@ function HomeOfferSectionItem({ offer }: Props) {
       </CardContent>
       <CardFooter className="gap-2">
         <Button variant="default">View Offer</Button>
-        <Button variant="outline">Save Offer</Button>
+        <HomeOfferSectionClaimOfferForm id={offer.id} />
       </CardFooter>
     </Card>
   );
