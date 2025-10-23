@@ -1,0 +1,1 @@
+ALTER TABLE "receipts" ADD COLUMN "externalId" varchar(512) NOT NULL;

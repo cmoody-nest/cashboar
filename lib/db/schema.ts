@@ -44,6 +44,7 @@ export const resend_webhooks = pgTable("resend_webhooks", {
 
 export const receipts = pgTable("receipts", {
   id: serial("id").primaryKey(),
+  externalId: varchar("externalId", { length: 512 }).notNull(),
   url: varchar("url", { length: 1024 }).notNull(),
   profileId: integer("profileId")
     .notNull()
