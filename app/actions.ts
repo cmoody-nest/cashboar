@@ -1,6 +1,8 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import z from "zod";
+import { claimCoreSaveOffer } from "@/lib/coresave/customer";
 import { db } from "@/lib/db";
 import { getProfileBySupabaseId } from "@/lib/db/profiles/utils";
 import { profile_offers } from "@/lib/db/schema";
@@ -17,6 +19,7 @@ export async function claimOffer(data: FormData) {
     })
     .parse({
       id: data.get("offerId"),
+      source: data.get("source"),
     });
 
   await db
@@ -42,4 +45,8 @@ export async function claimOffer(data: FormData) {
   logger.info(
     `Offer claimed: offerId=${id}, profileId=${profile.id}, type=coresave`,
   );
+
+  const offerUrl = await claimCoreSaveOffer(id, user.id);
+
+  redirect(offerUrl);
 }
