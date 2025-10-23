@@ -15,6 +15,7 @@ export const profileStatus = pgEnum("profile_status", [
   "suspended",
 ]);
 export const offerwallType = pgEnum("offerwall_type", ["coresave", "besitos"]);
+export const offerStatus = pgEnum("offer_status", ["claimed", "completed"]);
 
 export const profiles = pgTable("profiles", {
   id: serial("id").primaryKey(),
@@ -50,10 +51,11 @@ export const receipts = pgTable("receipts", {
     }),
 }).enableRLS();
 
-export const savedOffers = pgTable("saved_offers", {
+export const profileOffers = pgTable("profile_offers", {
   id: serial("id").primaryKey(),
   offerId: varchar("offerId", { length: 256 }).notNull(),
   offerwallType: offerwallType("offerwallType").notNull(),
+  status: offerStatus("status").notNull(),
   profileId: integer("profileId")
     .notNull()
     .references(() => profiles.id, {
@@ -63,7 +65,7 @@ export const savedOffers = pgTable("saved_offers", {
 
 export const profilesRelations = relations(profiles, ({ many }) => ({
   receipts: many(receipts),
-  savedOffers: many(savedOffers),
+  savedOffers: many(profileOffers),
 }));
 
 export const receiptsRelations = relations(receipts, ({ one }) => ({
@@ -73,9 +75,9 @@ export const receiptsRelations = relations(receipts, ({ one }) => ({
   }),
 }));
 
-export const savedOffersRelations = relations(savedOffers, ({ one }) => ({
+export const profilesOffersRelations = relations(profileOffers, ({ one }) => ({
   profile: one(profiles, {
-    fields: [savedOffers.profileId],
+    fields: [profileOffers.profileId],
     references: [profiles.id],
   }),
 }));
