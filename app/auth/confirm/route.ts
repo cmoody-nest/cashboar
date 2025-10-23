@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import z from "zod";
 import { WelcomeEmail } from "@/components/email/welcome";
+import { ensureCoreSaveCustomer } from "@/lib/coresave/customer";
 import { resend } from "@/lib/email";
 import { env } from "@/lib/env";
 import logger, { withLogger } from "@/lib/logger";
@@ -42,6 +43,9 @@ export async function GET(request: NextRequest) {
 
       // If verification is successful and a user is returned, redirect to the next URL or home
       if (!error && data.user) {
+        // Ensure CoreSave customer on signup
+        await ensureCoreSaveCustomer(data.user.id);
+
         // Send welcome email on signup
         if (data.user.email) {
           const { error } = await resend.emails.send({
