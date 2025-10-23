@@ -148,6 +148,13 @@
       "when": 1761208770497,
       "tag": "0020_smart_yellow_claw",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1761212393546,
+      "tag": "0021_sparkling_rachel_grey",
+      "breakpoints": true
     }
   ]
 }
