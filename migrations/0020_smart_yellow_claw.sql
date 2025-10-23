@@ -1,0 +1,1 @@
+ALTER TABLE "profile_offers" ADD COLUMN "source" varchar(512) NOT NULL;

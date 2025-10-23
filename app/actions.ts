@@ -1,5 +1,6 @@
 "use server";
 
+import z from "zod";
 import { db } from "@/lib/db";
 import { getProfileBySupabaseId } from "@/lib/db/profiles/utils";
 import { profile_offers } from "@/lib/db/schema";
@@ -10,9 +11,13 @@ import { OfferSchema } from "@/lib/types/offer";
 export async function claimOffer(data: FormData) {
   const user = await getSupabaseUser();
   const profile = await getProfileBySupabaseId(user.id);
-  const { id } = OfferSchema.pick({ id: true }).parse({
-    id: data.get("offerId"),
-  });
+  const { id, source } = OfferSchema.pick({ id: true })
+    .extend({
+      source: z.string(),
+    })
+    .parse({
+      id: data.get("offerId"),
+    });
 
   await db
     .insert(profile_offers)
@@ -20,14 +25,18 @@ export async function claimOffer(data: FormData) {
       offerId: id,
       offerwallType: "coresave",
       status: "claimed",
+      source,
       profileId: profile.id,
     })
-    .onConflictDoNothing({
+    .onConflictDoUpdate({
       target: [
         profile_offers.offerId,
         profile_offers.offerwallType,
         profile_offers.profileId,
       ],
+      set: {
+        source,
+      },
     });
 
   logger.info(

@@ -18,7 +18,9 @@ function HomeOfferSectionClaimOfferForm({ id }: Props) {
     mutationKey: ["claim-offer", id],
     mutationFn: async () => {
       const formData = new FormData();
+
       formData.append("offerId", id);
+      formData.append("source", "home_screen");
 
       await claimOffer(formData);
     },

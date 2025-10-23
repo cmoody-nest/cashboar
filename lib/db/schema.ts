@@ -59,6 +59,7 @@ export const profile_offers = pgTable(
     offerId: varchar("offerId", { length: 256 }).notNull(),
     offerwallType: offerwallType("offerwallType").notNull(),
     status: offerStatus("status").notNull(),
+    source: varchar("source", { length: 512 }).notNull(),
     profileId: integer("profileId")
       .notNull()
       .references(() => profiles.id, {
